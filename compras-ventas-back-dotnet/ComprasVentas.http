@@ -1,0 +1,198 @@
+@ComprasVentas_HostAddress = http://localhost:5136
+
+GET {{ComprasVentas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+### MAS SERVICIOS
+
+POST  {{ComprasVentas_HostAddress}}/roles
+Accept: application/json
+
+###
+
+# Permiso Controller Tests
+
+### Get All Permisos
+GET {{ComprasVentas_HostAddress}}/api/Permiso
+Accept: application/json
+
+### Create Permiso
+POST {{ComprasVentas_HostAddress}}/api/Permiso
+Content-Type: application/json
+
+{
+  "nombre": "Crear Usuario",
+  "recurso": "Usuario",
+  "accion": "Crear"
+}
+
+###
+
+# Rol Controller Tests
+
+### Get All Roles
+GET {{ComprasVentas_HostAddress}}/api/Rol
+Accept: application/json
+
+### Get Rol by Id
+GET {{ComprasVentas_HostAddress}}/api/Rol/100
+Accept: application/json
+
+### Create Rol
+POST {{ComprasVentas_HostAddress}}/api/Rol
+Content-Type: application/json
+
+{
+  "nombre": "Administrador",
+  "descripcion": "Rol con permisos administrativos",
+  "permisoIds": [1, 2]
+}
+
+### Update Rol
+PUT {{ComprasVentas_HostAddress}}/api/Rol/1
+Content-Type: application/json
+
+{
+  "nombre": "Administrador Actualizado",
+  "descripcion": "Rol actualizado",
+  "permisoIds": [1, 2, 3]
+}
+
+### Delete Rol
+DELETE {{ComprasVentas_HostAddress}}/api/Rol/1
+Accept: application/json
+
+### Get Usuario by Id
+GET {{ComprasVentas_HostAddress}}/api/Usuario/1000
+Accept: application/json
+
+###
+
+# Usuario Controller Tests
+
+### Get All Usuarios
+GET {{ComprasVentas_HostAddress}}/api/Usuario
+Accept: application/json
+
+### Create Usuario
+POST {{ComprasVentas_HostAddress}}/api/Usuario
+Content-Type: application/json
+
+{
+  "nombre": "usuario1",
+  "correo": "usuario1@example.com",
+  "password": "Passwor1!",
+  "nombres": "Juan",
+  "apellidos": "Perez",
+  "fechaNacimiento": "01-01-1990",
+  "genero": "Masculino",
+  "telefono": "123456789",
+  "direccion": "Calle 123",
+  "nacionalidad": "Mexicano",
+  "rolIds": [1]
+}
+
+### Update Usuario
+PUT {{ComprasVentas_HostAddress}}/api/Usuario/1
+Content-Type: application/json
+
+{
+  "nombre": "usuario1_updated",
+  "correo": "usuario1_updated@example.com",
+  "password": "Password2!",
+  "nombres": "Juan",
+  "apellidos": "Perez",
+  "fechaNacimiento": "01/01/1990",
+  "genero": "Masculino",
+  "telefono": "123456789",
+  "direccion": "Calle 123",
+  "nacionalidad": "Mexicano",
+  "rolIds": [1, 2]
+}
+
+### Delete Usuario
+DELETE {{ComprasVentas_HostAddress}}/api/Usuario/1
+Accept: application/json
+
+###
+
+# Auth Controller Tests
+
+### Login / Authenticate
+POST {{ComprasVentas_HostAddress}}/api/Auth/login
+Content-Type: application/json
+
+{
+  "username": "Alfredo.Reynoso",
+  "password": "Password123!"
+}
+
+###
+
+# Producto Controller Tests
+
+### Get All Productos Pagination
+GET {{ComprasVentas_HostAddress}}/api/Producto?Page=50&Size=10
+Accept: application/json
+
+### Create Producto
+POST {{ComprasVentas_HostAddress}}/api/Producto
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="nombre"
+
+Producto de Prueba
+--boundary
+Content-Disposition: form-data; name="unidadMedida"
+
+Unidad
+--boundary
+Content-Disposition: form-data; name="marca"
+
+Generica
+--boundary
+Content-Disposition: form-data; name="precioVenta"
+
+150.50
+--boundary
+Content-Disposition: form-data; name="categoriaId"
+
+1
+--boundary--
+
+###
+
+# Nota Controller Tests
+
+### Create Nota
+POST {{ComprasVentas_HostAddress}}/api/Nota
+Content-Type: application/json
+
+{
+  "impuestos": 10.50,
+  "total": 300.00,
+  "descuentos": 5.00,
+  "estado": true,
+  "tipo": "Venta",
+  "observaciones": "Nota de prueba desde HTTP",
+  "clienteProveedorId": 1,
+  "usuarioId": 6,
+  "movimientos": [
+    {
+      "cantidad": 2,
+      "tipoMovimiento": "Salida",
+      "precioUnitarioCompra": 0,
+      "precioUnitarioVenta": 150.00,
+      "observaciones": "Detalle de Venta",
+      "productoId": 4,
+      "almacenId": 11,
+      "notaId": 0
+    }
+  ]
+}
+
+### Generate Nota Report
+GET {{ComprasVentas_HostAddress}}/api/Nota/2/report
+Accept: application/pdf
+

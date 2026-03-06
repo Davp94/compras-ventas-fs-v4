@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: compras-ventas-db
+    environment:
+      POSTGRES_DB: compras_ventas_v4
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - compras-ventas-network
+
+  app:
+    build:
+     context: .
+     dockerfile: Dockerfile
+    container_name: compras-ventas-app
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/compras_ventas_v4
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 123456
+      STORAGE_LOCATION: /app/storage
+    volumes:
+      - ./storage:/app/storage
+    depends_on:
+      - db
+    networks:
+      - compras-ventas-network
+
+volumes:
+  postgres_data:
+
+networks:
+  compras-ventas-network:
+    driver: bridge

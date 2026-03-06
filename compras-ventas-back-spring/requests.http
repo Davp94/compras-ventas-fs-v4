@@ -1,0 +1,144 @@
+@host = http://localhost:8090
+@token = your-jwt-token-here
+
+### Health Check
+GET {{host}}/health
+
+### Permisos - Listar
+GET {{host}}/permiso
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfbWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwic3ViIjoibWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwiaWF0IjoxNzcwNjgxMDM0LCJleHAiOjE3NzA2ODE5MzR9.07mrm1Kdl6Y9i2mWcQA60P-pH1tvrb7y_hi-iLMcVD9t0hVRJeyVvvisNfoVkmrGsPP9yZ_NKvPWx35xPuAxCg
+
+### Permisos - Crear
+POST {{host}}/permiso
+Content-Type: application/json
+
+{
+    "nombre": "LECTURA_REPORTES",
+    "recurso": "REPORTES",
+    "accion": "LEER"
+}
+
+### Roles - Listar
+GET {{host}}/rol
+
+### Roles - Obtener por ID
+GET {{host}}/rol/ssss
+
+### Roles - Crear
+POST {{host}}/rol
+Content-Type: application/json
+
+{
+    "nombre": "ADMINISTRADOR",
+    "descripcion": "Rol con todos los permisos",
+    "permisos": [1]
+}
+
+### Roles - Actualizar
+PUT {{host}}/rol/1
+Content-Type: application/json
+
+{
+    "nombre": "ADMIN_MODIFICADO",
+    "descripcion": "Rol actualizado",
+    "permisos": [1]
+}
+
+### Roles - Eliminar
+DELETE {{host}}/rol/1
+
+### Usuarios - Listar
+GET {{host}}/usuario
+
+### Usuarios - Obtener por ID
+GET {{host}}/usuario/1
+
+### Usuarios - Crear
+POST {{host}}/usuario
+Content-Type: application/json
+
+{
+    "correo": "testd@example.com",
+    "password": "passworD1!",
+    "nombres": "Juand",
+    "apellidos": "Perez",
+    "fechaNacimiento": "05/05/1990",
+    "genero": "Masculino",
+    "telefono": "123456789",
+    "direccion": "Calle Falsa 123",
+    "nacionalidad": "Boliviana",
+    "roles": [1]
+}
+
+### Usuarios - Actualizar
+PUT {{host}}/usuario/1
+Content-Type: application/json
+
+{
+    "correo": "juan.perez@newmail.com",
+    "password": "NewPassword123!",
+    "nombres": "Juan Carlos",
+    "apellidos": "Perez Lopez",
+    "fechaNacimiento": "15/05/1990",
+    "genero": "Masculino",
+    "telefono": "987654321",
+    "direccion": "Av. Principal 456",
+    "nacionalidad": "Boliviana",
+    "roles": [1]
+}
+
+### Usuarios - Eliminar
+DELETE {{host}}/usuario/1
+
+### Auth - Login (Successful) @name login
+POST {{host}}/login
+Content-Type: application/json
+
+{
+    "username": "erin.spinka@hotmail.com",
+    "password": "123456"
+}
+
+### Auth - Refresh Token (Invalid Token)
+POST {{host}}/login/refresh-token
+Authentication: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfdGVzdGRAZXhhbXBsZS5jb20iLCJzdWIiOiJ0ZXN0ZEBleGFtcGxlLmNvbSIsImlhdCI6MTc3MDI1MTcxNywiZXhwIjoxNzcwODU2NTE3fQ.QvMBcLhPJyLL6BWsnZKKv20sKCj9_AdGwOHybDix4SJ6xLFhTGmWIWQ86wnusGmNgOqoPTZgo7u8Xlyw3w0vdA
+
+### Productos - Listar con Paginación
+GET {{host}}/productos/paginacion?pageNumber=30&pageSize=20&sortField=nombre&sortOrder=asc&nombre=&descripcion=&codigoBarra=&marca=&nombreCategoria=&almacenId=
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfZ2VuZS5oYW5lQGdtYWlsLmNvbSIsInN1YiI6ImdlbmUuaGFuZUBnbWFpbC5jb20iLCJpYXQiOjE3NzE1NDYxNTQsImV4cCI6MTc3MTU0NzA1NH0.JpKpWuRCexyXwejKZGbfuDZ_a1p8-FE73T3klCoVrDz46EaKCSnUL2Buynu-eDGK31o6oWYJN0bFh0PlAO4CNA
+
+### Productos - Crear
+POST {{host}}/producto
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfbWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwic3ViIjoibWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwiaWF0IjoxNzcwNjgxMDM0LCJleHAiOjE3NzA2ODE5MzR9.07mrm1Kdl6Y9i2mWcQA60P-pH1tvrb7y_hi-iLMcVD9t0hVRJeyVvvisNfoVkmrGsPP9yZ_NKvPWx35xPuAxCg
+
+{
+    "nombre": "Laptop HP",
+    "descripcion": "Laptop de 15 pulgadas con procesador Intel i7",
+    "marca": "LP-HP-001",
+    "categoriaId": 1,
+    "precioVentaActual": 1200.50,
+    "unidadMedida": "Unidad"
+}
+
+### Nota - Crear
+POST {{host}}/nota
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfbWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwic3ViIjoibWlxdWVsLndlaW1hbW5AZ21haWwuY29tIiwiaWF0IjoxNzcwNjgxMDM0LCJleHAiOjE3NzA2ODE5MzR9.07mrm1Kdl6Y9i2mWcQA60P-pH1tvrb7y_hi-iLMcVD9t0hVRJeyVvvisNfoVkmrGsPP9yZ_NKvPWx35xPuAxCg
+
+{
+    "tipo": "COMPRA",
+    "numeroNota": "NOTA-001",
+    "fecha": "2026-02-19",
+    "descripcion": "Compra de productos electrónicos",
+    "moneda": "BOB",
+    "clienteProveedorId": 1,
+    "detalles": [
+        {
+            "productoId": 1,
+            "cantidad": 5,
+            "precioUnitario": 1200.50,
+            "porcentajeDescuento": 0
+        }
+    ]
+}

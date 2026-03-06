@@ -1,0 +1,32 @@
+server:
+  port: 8090 
+spring:
+  application:
+    name: compras-ventas
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/compras_ventas_v4
+    username: postgres
+    password: 123456
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+logging:
+  level:
+    root: INFO  
+    org:
+      springframework:
+        web: DEBUG
+        orm: DEBUG
+        jdbc: DEBUG
+  file:
+    name: logs/compras-ventas.log
+    path: logs
+application:
+  jwt:
+    secret-key: L3WZ/a/I8rshHpdY6Jrz9DtmCEq5XBkNvx//mQVF0YPa4Zr8GiNDh0m1qnwESQfV61ZHZloibWrI3TrOAnm67g/ajjAkDkHYZ9Lkx5xfXWxuC8eziDlmCEZX1xMO7fhrmmuUgaCXWahz1MBmQDOTzYpZBDVT4RSN8U09mN6p511BOlfz8Ynm9xXZ5IPopKdvA0x+MWRQN2dK6UqZKYiI0ERXvp4y3hJsYIXxwIMi3z3tSzM2hcRLUfVe0Au64tExmBvP92EbqaecZdVgx3CkT3SYgGajK/xNOdhO1ex9QVhIswFmY9Y+reWlwN7WgMtdR2lwiVamob2fjmohs3PAo
+    access-token-expiration: 900000        # 15 minutes in milliseconds
+    refresh-token-expiration: 604800000    # 7 days in milliseconds     
+storage:
+  location: /home/david/Documents/projects/blumbit/spring-backendV4/storage      

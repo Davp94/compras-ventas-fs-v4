@@ -1,0 +1,127 @@
+using ComprasVentas.Common;
+using ComprasVentas.Data;
+using ComprasVentas.Middleware;
+using ComprasVentas.Repository;
+using ComprasVentas.Seeders.Dev;
+using ComprasVentas.Services.impl;
+using ComprasVentas.Services.spec;
+using Consul.AspNetCore;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection") 
+        ?? throw new InvalidOperationException("Conexion no encontrada")));
+// add clients 
+builder.Services.AddHttpClient("AuditService", client =>
+{
+   client.BaseAddress = new Uri(builder.Configuration["Services:AuditService"]); 
+});    
+//add msvc
+builder.Services.AddConsul(options =>
+{
+    options.Address = new Uri(builder.Configuration["Consul:Host"]);
+});    
+builder.Services.AddConsulServiceRegistration(options =>
+{
+    options.Name = builder.Configuration["Consul:ServiceName"];
+    options.ID = builder.Configuration["Consul:ServiceId"];
+    options.Port = int.Parse(builder.Configuration["Consul:ServicePort"]);
+});    
+// Add services to the container.
+builder.Services.AddScoped<PermisoRepository>();
+builder.Services.AddScoped<RolRepository>();
+builder.Services.AddScoped<IPermisoService, PermisoService>();
+builder.Services.AddScoped<IRolService, RolService>();
+builder.Services.AddScoped<UsuarioRepository>();
+builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+builder.Services.AddScoped<ITokenService , TokenService>();
+builder.Services.AddScoped<IAuthService , AuthService>();
+builder.Services.AddScoped<SucursalRepository>();
+builder.Services.AddScoped<ISucursalService, SucursalService>();
+builder.Services.AddScoped<AlmacenProductoRepository>();
+builder.Services.AddScoped<NotaRepository>();
+builder.Services.AddScoped<MovimientoRepository>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ClienteProveedorRepository>();
+builder.Services.AddScoped<INotaService, NotaService>();
+builder.Services.AddScoped<IProductoService, ProductoService>();
+
+// Registrando Seeders
+builder.Services.AddScoped<PermisoSeeder>();
+builder.Services.AddScoped<RolSeeder>();
+builder.Services.AddScoped<UsuarioSeeder>();
+builder.Services.AddScoped<CategoriaSeeder>();
+builder.Services.AddScoped<ProductoSeeder>();
+builder.Services.AddScoped<SucursalSeeder>();
+builder.Services.AddScoped<AlmacenSeeder>();
+builder.Services.AddScoped<AlmacenProductoSeeder>();
+builder.Services.AddScoped<ClienteProveedorSeeder>();
+
+builder.Services.AddScoped<DataSeeder>();
+builder.Services.AddJwtAuthentication(builder.Configuration);
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>(); // new GlobalExceptionHandler();
+builder.Services.AddProblemDetails();
+builder.Services.AddControllers()
+ .ConfigureApiBehaviorOptions(options =>
+ {
+     options.InvalidModelStateResponseFactory = context =>
+     {
+         var errors = context.ModelState.Values
+             .SelectMany(v => v.Errors)
+             .Select(e => e.ErrorMessage)
+             .ToList();
+         var response = new ErrorResponse
+         {
+             StatusCode = StatusCodes.Status400BadRequest,
+             Message = "Errores en validacion",
+             Timestamp = DateTime.UtcNow,
+             Path = context.HttpContext.Request.Path,
+             Errors = errors
+         };
+         return new BadRequestObjectResult(response);
+     };
+ });
+// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+builder.Services.AddOpenApi();
+
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var context  = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        context.Database.Migrate();
+
+        var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+        await seeder.SeedAsync();
+    }
+}
+//TODO add base seeders
+using (var scope = app.Services.CreateScope())
+{
+    
+}
+
+app.UseExceptionHandler();
+app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();

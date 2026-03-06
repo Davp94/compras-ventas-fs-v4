@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .header {
+            display: flex;
+            flex-direction: row;
+            justify-content: start;
+            align-items: start;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 5px;
+        }
+        .header-left {
+            width: auto;
+        }
+        .header-right {
+            width: auto;
+        }
+        .logo {
+            max-width: 100px;
+            height: 100px;
+        }
+        .nota-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .info-section {
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: left;
+        }
+        .total-section {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+    <title>Nota Report</title>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="nota-title">Nota - <span th:text="${nota.id}">00000</span></div>
+            <div>Fecha: <span th:text="${nota.fecha}"></span>2026-01-01</div>
+            <div>Usuario: <span th:text="${nota.usuario.nombre}"></span></div>
+        </div>
+        <div class="header-right">
+            <img th:src="@{classpath:/static/logo-blumbit-color1.png}" alt="Company Logo" class="logo"></img>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <h3>Cliente / Proveedor</h3>
+        <p>Nombre: <span th:text="${nota.clienteProveedor.razonSocial}">Cliente</span></p>
+        <p>Documento: <span th:text="${nota.clienteProveedor.nroIdentificacion}"></span></p>
+    </div>
+ 
+    <table>
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio Unitario C</th>
+                <th>Precio Unitario V</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="movimiento : ${movimientos}">
+                <td th:text="${movimiento.producto.nombre}"></td>
+                <td th:text="${movimiento.cantidad}"></td>
+                <td th:text="${movimiento.precioUnitarioCompra}"></td>
+                <td th:text="${movimiento.precioUnitarioVenta}"></td>
+                <td th:text="${movimiento.cantidad * movimiento.precioUnitarioVenta}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="total-section">
+        Total: <span th:text="${nota.total}">0.00</span>
+    </div>
+</body>
+</html>
