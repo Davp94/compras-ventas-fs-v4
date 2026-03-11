@@ -1,7 +1,7 @@
-export default function Usuarios() {
+import UsuariosHome from "@/components/usuarios/Home";
+
+export default function UsuariosPage() {
   return (
-    <div className="">
-      <h1>USUARIOS HOME</h1>
-    </div>
+    <UsuariosHome />
   );
 }
