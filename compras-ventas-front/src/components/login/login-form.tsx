@@ -1,4 +1,5 @@
 "use client"
+import { AuthService } from "@/service/auth.service";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
@@ -26,9 +27,11 @@ export default function LoginForm() {
     const router = useRouter();
     //TODO define hook login
     const toast = useRef<Toast>(null);
-    const onSubmit = () => {
+    const onSubmit = async () => {
         try {
             const authRequest = getValues();
+            const response = await AuthService.login(authRequest.username, authRequest.password);
+            console.log("🚀 ~ onSubmit ~ response:", response)
             console.log(authRequest);
             toast.current?.show({
                 severity: 'success',
@@ -80,7 +83,7 @@ export default function LoginForm() {
                         <div className="field">
                             <Controller
                                 control={control}
-                                name="username"
+                                name="password"
                                 rules={{ required: 'Campo requerido' }}
                                 render={({ field, fieldState }) => (
                                     <>
