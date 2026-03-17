@@ -4,16 +4,18 @@ import { MenuItem } from "primereact/menuitem";
 import { Menu } from "primereact/menu";
 import { Button } from "primereact/button";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function MainLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+
+  const {logout} = useAuth();
   const navigationItems = [
     { name: "Home", href: "/", icon: "pi pi-home" },
     { name: "Usuarios", href: "/usuarios", icon: "pi pi-user" },
     { name: "Roles", href: "/roles", icon: "pi pi-card" },
   ];
-  console.log("🚀 ~ MainLayout ~ navigationItems:", navigationItems);
 
   const topbarItems: MenuItem[] = [
     {
@@ -27,7 +29,7 @@ export default function MainLayout({
       label: "Salir",
       icon: "pi pi-sign-out",
       command: () => {
-        alert("logout");
+        logout();
       },
     },
   ];

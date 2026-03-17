@@ -1,5 +1,7 @@
 "use client"
+import { useAuth } from "@/hooks/useAuth";
 import { AuthService } from "@/service/auth.service";
+import { AuthRequest } from "@/types/request/AuthRequest";
 import { useRouter } from "next/navigation";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
@@ -25,12 +27,12 @@ export default function LoginForm() {
         }
     });
     const router = useRouter();
-    //TODO define hook login
+    const { login } = useAuth();
     const toast = useRef<Toast>(null);
     const onSubmit = async () => {
         try {
-            const authRequest = getValues();
-            const response = await AuthService.login(authRequest.username, authRequest.password);
+            const authRequest: AuthRequest = getValues();
+            const response = await login(authRequest);
             console.log("🚀 ~ onSubmit ~ response:", response)
             console.log(authRequest);
             toast.current?.show({
