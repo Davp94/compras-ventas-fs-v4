@@ -9,7 +9,11 @@ import InputTextController from "../common/InputTextController";
 import CalendarController from "../common/CalendarController";
 import MultiselectController from "../common/MultiselectController";
 import { Button } from "primereact/button";
-import { RolService } from "@/service/rol.service";
+import { useRoles } from "@/hooks/useRoles";
+import { useUsuarios } from "@/hooks/useUsuarios";
+import DropdownController from "../common/DropdownController";
+import RadioButtonController from "../common/RadioButtonController";
+import PasswordController from "../common/PasswordController";
 
 interface UsuariosFormProps {
   usuario: UsuarioResponse | null;
@@ -24,6 +28,18 @@ export default function UsuariosForm({
   flagAction,
 }: UsuariosFormProps) {
   const [roles, setRoles] = useState<RolResponse[]>([]);
+  const [nacionalidad, setNacionalidad] = useState<any[]>([
+    {id: 1, label: 'Nacionalidad 1'},
+    {id: 2, label: 'Nacionalidad 2'},
+    {id: 3, label: 'Nacionalidad 3'},
+    {id: 4, label: 'Nacionalidad 4'}
+  ])
+
+  const [generos, setGeneros] = useState<any[]>([
+    {id: 1, label: 'Masculino'},
+    {id: 2, label: 'Femenino'},
+    {id: 3, label: 'Otro'},
+  ])
   const [rolesUsuario, setRolesUsuario] = useState([]);
   const {
     control,
@@ -39,40 +55,73 @@ export default function UsuariosForm({
       nombres: "",
       apellidos: "",
       fechaNacimiento: "",
+      genero: "",
+      nacionalidad: "",
+      password: "",
       telefono: "",
       direccion: "",
-      roles: [],
+      roles: [] as number[],
     },
   });
+  const {getAll} = useRoles();
+  const {create, update} = useUsuarios();
 
   const initForm = async () => {
-    //TODO add roles
-    const rolesResponse = await RolService.getRoles();
-    console.log("🚀 ~ initForm ~ const:", rolesResponse)
-    
+    const rolesResponse = await getAll();
     setRoles(rolesResponse);
+    //add set values
+    if(usuario != null && flagAction == ActionTypeEnum.UPDATE){
+      setValue("id", usuario.id);
+      setValue("nombres", usuario.nombres);
+      setValue("apellidos", usuario.apellidos);
+      setValue("fechaNacimiento", usuario.fechaNacimiento);
+      setValue("telefono", usuario.telefono);
+      setValue("direccion", usuario.direccion);
+      setValue("roles", usuario.roles);
+      //TODO add un response nacionalidad y genero
+    }
   };
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (flagAction == ActionTypeEnum.CREATE) {
       const result = getValues();
-      //TODO call service;
-      toast.current?.show({
-        severity: "success",
-        summary: "Exitoso",
-        detail: "usuario creado",
-        life: 3000,
-      });
+      try {
+        await create(result);
+        toast.current?.show({
+          severity: "success",
+          summary: "Exitoso",
+          detail: "usuario creado",
+          life: 3000,
+        });
+      } catch (error) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al crear el usuario",
+          life: 3000,
+        });
+      }
+     
       reset();
     }
     if (flagAction == ActionTypeEnum.UPDATE) {
-      //TODO call service
-      toast.current?.show({
-        severity: "success",
-        summary: "Exitoso",
-        detail: "usuario actualizado",
-        life: 3000,
-      });
+      const result = getValues();
+      try {
+        await update(result.id, result);
+        toast.current?.show({
+          severity: "success",
+          summary: "Exitoso",
+          detail: "usuario actualizado",
+          life: 3000,
+        });
+      } catch (error) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Error al actualizar el usuario",
+          life: 3000,
+        });
+      }
       reset();
     }
   };
@@ -142,6 +191,35 @@ export default function UsuariosForm({
               rules={{ required: "FechaNacimiento requeridos" }}
               placeholder="Ingrese su fecha de nacimiento"
               dateFormat="dd/mm/yyyy"
+            />
+          </div>
+          <div className="p-fluid">
+            <DropdownController
+              control={control}
+              name="nacionalidad"
+              placeholder="Seleccione la nacionalidad"
+              options={nacionalidad}
+              optionLabel="label"
+              optionValue="label"
+            />
+          </div>
+          <div className="p-fluid">
+            <RadioButtonController
+              control={control}
+              name="genero"
+              rules={{ required: "Genero requeridos" }}
+              options={generos}
+              optionLabel="label"
+              optionValue="label"
+            />
+          </div>
+          <div className="p-fluid">
+            <PasswordController
+              control={control}
+              name="password"
+              rules={{ required: "password requeridos" }}
+              toggleMask={true}  
+              feedback={false}
             />
           </div>
           <div className="p-fluid">

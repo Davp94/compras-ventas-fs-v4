@@ -33,16 +33,13 @@ export default function LoginForm() {
         try {
             const authRequest: AuthRequest = getValues();
             const response = await login(authRequest);
-            console.log("🚀 ~ onSubmit ~ response:", response)
-            console.log(authRequest);
             toast.current?.show({
                 severity: 'success',
                 summary: 'Login exitoso',
                 detail: 'Bienvenido a la app compras ventas',
                 life: 3000
             })
-            //TODO call servicio
-            router.push('/') ;
+            router.push('/');
         } catch (error) {
             toast.current?.show({
                 severity: 'error',
