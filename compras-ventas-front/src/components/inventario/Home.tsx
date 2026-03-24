@@ -14,6 +14,8 @@ import { IconField } from "primereact/iconfield";
 import { InputIcon } from "primereact/inputicon";
 import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
+import { Toolbar } from "primereact/toolbar";
+import { Column } from "primereact/column";
 
 export default function InventarioHome() {
     const [productos, setProductos] = useState<PaginationResponse<ProductoResponse>>();
@@ -206,28 +208,33 @@ export default function InventarioHome() {
         <>
             <Toast ref={toast} />
             <Toolbar
-              left={leftToolbarTemplate}
-              right={rightToolbarTemplate}
+              start={leftToolbarTemplate}
+              end={rightToolbarTemplate}
             />
             <DataTable
+              id="inventarioTable"
               ref={dt}
-              value={productos?.data}
+              value={productos?.content}
               lazy
               paginator
               first={lazyState.pageNumber * lazyState.pageSize}
               rows={lazyState.pageSize}
-              totalRecords={productos?.totalRecords}
+              rowsPerPageOptions={[10, 20, 50]}
+              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+              currentPageReportTemplate="Showing {first} to {last} of {totalRecords}  productos"
+              globalFilter={globalFilter}
+              header={header}
+              totalRecords={productos?.totalElements}
               onPage={onPage}
               onSort={onSort}
               sortField={lazyState.sortField}
               sortOrder={lazyState.sortOrder === 'ASC' ? 1 : -1}
-              header={header}
-              className="p-datatable-customers"
             >
-              <Column field="codigo" header="Código" sortable />
               <Column field="nombre" header="Nombre" sortable />
-              <Column field="precio" header="Precio" sortable />
-              <Column field="stock" header="Stock" sortable />
+              <Column field="descripcion" header="Descripción" sortable />
+              <Column field="precioVentaActual" header="Precio" sortable />
+              <Column field="marca" header="Marca" sortable />
+              <Column field="nombreCategoria" header="Categoría" sortable />
               <Column body={actionBodyTemplate} header="Acciones" />
             </DataTable>
         </>)
