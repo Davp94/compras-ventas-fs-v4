@@ -1,3 +1,4 @@
+"use client";
 import { useNotas } from "@/hooks/useNotas";
 import { ClienteProveedorResponse } from "@/types/response/ClienteProveedorResponse";
 import { ProductoResponse } from "@/types/response/ProductosResponse";
@@ -5,20 +6,29 @@ import { useRouter } from "next/navigation";
 import { Toast } from "primereact/toast";
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
-import { useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
 import DropdownController from "../common/DropdownController";
 import { Card } from "primereact/card";
 import InputTextAreaController from "../common/InputTextAreaController";
 import { Button } from "primereact/button";
 import InputTextController from "../common/InputTextController";
+import { AutoComplete } from "primereact/autocomplete";
+import { InputNumber } from "primereact/inputnumber";
+import { Dialog } from "primereact/dialog";
+import { AlmacenResponse } from "@/types/response/AlmacenResponse";
+import { useInventario } from "@/hooks/useInventario";
 export default function NotaForm() {
     const [tipo, setTipo] = useState<string[]>(["COMPRA", "VENTA"]);
+    const [modalReport, setModalReport] = useState<boolean>(false);
+    const [urlReport, setUrlReport] = useState<string>("");
     const [productos, setProductos] = useState<ProductoResponse[]>([]);
+    const [almacenes, setAlmacenes] = useState<AlmacenResponse[]>([]);
     const [clientesProveedores, setClientesProveedores] = useState<ClienteProveedorResponse[]>([]);
     const [filteredProductos, setFilteredProductos] = useState<ProductoResponse[]>([]);
     const router = useRouter();
     const toast = useRef<Toast>(null);
-    const { create } = useNotas();
+    const { create, getAllClientes } = useNotas();
+    const { getAlmacenes,  getProductosAlmacen } = useInventario();
     const usuarioId = Cookies.get("identifier");
 
     const {
@@ -63,6 +73,7 @@ export default function NotaForm() {
     const watchImpuestos = watch('impuestos');
 
     const initForm = async () => {
+        //TODO get all almacenes
         //TODO get all clientes
         //TODO get all productos
     }
@@ -119,6 +130,19 @@ export default function NotaForm() {
     const onSubmit = async () => {
         try {
             const response = await create(getValues());
+            const blob = new Blob([response], { type: "application/pdf" });
+            const url = URL.createObjectURL(blob);
+            //open in other tab browser
+            window.open(url, "_blank");
+            //download
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "nota.pdf";
+            link.click();
+            //open in modal
+            setUrlReport(url);
+            setModalReport(true);
+
             toast.current?.show({
                 severity: "success",
                 summary: "Exitoso",
@@ -158,62 +182,168 @@ export default function NotaForm() {
                 </div>
                 <form onSubmit={handleSubmit(onSubmit)} className="w-full mt-4">
                     <Card title="Datos Generales">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div className="p-fluid">
-                            <DropdownController
-                                control={control}
-                                name="tipoNota"
-                                rules={{ required: "Tipo de nota requerido" }}
-                                placeholder="Seleccione el tipo de nota"
-                                options={tipo}
-                            />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="p-fluid">
+                                <DropdownController
+                                    control={control}
+                                    name="tipoNota"
+                                    rules={{ required: "Tipo de nota requerido" }}
+                                    placeholder="Seleccione el tipo de nota"
+                                    options={tipo}
+                                />
+                            </div>
+                            <div className="p-fluid">
+                                <DropdownController
+                                    control={control}
+                                    name="clienteProveedorId"
+                                    rules={{ required: "Cliente/Proveedor requerido" }}
+                                    placeholder="Seleccione el cliente/proveedor"
+                                    options={clientesProveedores}
+                                    optionLabel="razonSocial"
+                                    optionValue="id"
+                                />
+                            </div>
+                            <div className="p-fluid col-span-2">
+                                <InputTextAreaController
+                                    control={control}
+                                    name="observaciones"
+                                    rules={{ required: "Observaciones requeridas" }}
+                                    placeholder="Ingrese las observaciones"
+                                />
+                            </div>
                         </div>
-                        <div className="p-fluid">
-                            <DropdownController
-                                control={control}
-                                name="clienteProveedorId"
-                                rules={{ required: "Cliente/Proveedor requerido" }}
-                                placeholder="Seleccione el cliente/proveedor"
-                                options={clientesProveedores}
-                                optionLabel="razonSocial"
-                                optionValue="id"
-                            />
-                        </div>
-                        <div className="p-fluid col-span-2">
-                            <InputTextAreaController
-                                control={control}
-                                name="observaciones"
-                                rules={{ required: "Observaciones requeridas" }}
-                                placeholder="Ingrese las observaciones"
-                            />
-                        </div>
-                    </div>
 
                     </Card>
-                    <Card 
-                    title="Productos y Movimientos" 
-                    subTitle={
-                        <Button
-                            icon="pi pi-plus"
-                            label="Agregar Movimiento"
-                            severity="success"
-                            size="small"
-                            onClick={() => addMovimiento()}
-                        />
-                    }>
+                    <Card
+                        title="Productos y Movimientos"
+                        subTitle={
+                            <Button
+                                icon="pi pi-plus"
+                                label="Agregar Movimiento"
+                                severity="success"
+                                size="small"
+                                onClick={() => addMovimiento()}
+                            />
+                        }>
                         {fields.map((field, index) => (
                             <div key={field.id}>
-                                <InputTextController
-                                    control={control}
-                                    name={`movimientos.${index}.productoId`}
-                                    rules={{ required: "Producto requerido" }}
-                                    placeholder="Seleccione el producto"
-                                />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <Controller
+                                        name={`movimientos.${index}.productoId`}
+                                        control={control}
+                                        rules={{ required: "Producto requerido" }}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <AutoComplete
+                                                    field="nombre"
+                                                    value={productos.find((p) => p.id === field.value)}
+                                                    suggestions={filteredProductos}
+                                                    completeMethod={searchProducto}
+                                                    onSelect={(e) => onProductoSelect(e.value, index)}
+                                                    dropdown
+                                                    placeholder="Seleccione el producto"
+                                                />
+                                                {fieldState.error && <small className="text-red-500">{fieldState.error.message}</small>}
+                                            </>
+                                        )}
+                                    />
+                                    <Controller
+                                        name={`movimientos.${index}.cantidad`}
+                                        control={control}
+                                        rules={{ required: "Cantidad requerida" }}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <InputNumber
+                                                    value={field.value}
+                                                    onValueChange={(e) => field.onChange(e.value)}
+                                                    placeholder="Cantidad"
+                                                />
+                                                {fieldState.error && <small className="text-red-500">{fieldState.error.message}</small>}
+                                            </>
+                                        )}
+                                    />
+                                    {getValues('tipoNota') === "COMPRA" ? (
+                                        <Controller
+                                            name={`movimientos.${index}.precioUnitarioCompra`}
+                                            control={control}
+                                            rules={{ required: "Precio requerido" }}
+                                            render={({ field, fieldState }) => (
+                                                <>
+                                                    <InputNumber
+                                                        value={field.value}
+                                                        onValueChange={(e) => field.onChange(e.value)}
+                                                        placeholder="Precio"
+                                                    />
+                                                    {fieldState.error && <small className="text-red-500">{fieldState.error.message}</small>}
+                                                </>
+                                            )}
+                                        />
+                                    ) : (
+                                        <Controller
+                                            name={`movimientos.${index}.precioUnitarioVenta`}
+                                            control={control}
+                                            rules={{ required: "Precio requerido" }}
+                                            render={({ field, fieldState }) => (
+                                                <>
+                                                    <InputNumber
+                                                        value={field.value}
+                                                        onValueChange={(e) => field.onChange(e.value)}
+                                                        placeholder="Precio"
+                                                    />
+                                                    {fieldState.error && <small className="text-red-500">{fieldState.error.message}</small>}
+                                                </>
+                                            )}
+                                        />
+                                    )}
+                                    <Controller
+                                        name={`movimientos.${index}.subtotal`}
+                                        control={control}
+                                        render={({ field, fieldState }) => (
+                                            <>
+                                                <InputNumber
+                                                    value={field.value}
+                                                    onValueChange={(e) => field.onChange(e.value)}
+                                                    placeholder="Total"
+                                                />
+                                                {fieldState.error && <small className="text-red-500">{fieldState.error.message}</small>}
+                                            </>
+                                        )}
+                                    />
+                                    <div>
+                                        <InputTextController
+                                            name={`movimientos.${index}.observaciones`}
+                                            control={control}
+                                            rules={{ required: "Observación requerida" }}
+                                            placeholder="Observación"
+                                        />
+                                    </div>
+                                    {fields.length > 1 && (
+                                        <Button
+                                            icon="pi pi-trash"
+                                            severity="danger"
+                                            onClick={() => removeMovimiento(index)}
+                                        />
+                                    )}
+
+                                </div>
                             </div>
                         ))}
                     </Card>
                     <Card title="Resumen">
-                        
+                        <div className="flex flex-column gap-2">
+                            <div className="flex justify-content-between">
+                                <label>Subtotal</label>
+                                <label>{getValues('total').toFixed(2) || '0.00'}</label>
+                            </div>
+                            <div className="flex justify-content-between">
+                                <label>Descuentos</label>
+                                <label>{getValues('descuentos').toFixed(2) || '0.00'}</label>
+                            </div>
+                            <div className="flex justify-content-between">
+                                <label>Impuesto</label>
+                                <label>{getValues('impuestos').toFixed(2) || '0.00'}</label>
+                            </div>
+                        </div>
                     </Card>
                     <div className="flex gap-2 justify-content-end">
                         <Button
@@ -225,7 +355,16 @@ export default function NotaForm() {
                     </div>
                 </form>
             </div>
-
+            <Dialog
+                visible={modalReport}
+                onHide={() => setModalReport(false)}
+                style={{ width: '50vw' }}
+            >
+                <div className="flex justify-center">
+                    <iframe src={urlReport} width="100%" height="500px" />
+                    {/* <embed src={urlReport} type="application/pdf" width="100%" height="500px" /> */}
+                </div>
+            </Dialog>
         </>
     );
 }

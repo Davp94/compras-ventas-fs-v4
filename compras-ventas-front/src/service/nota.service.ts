@@ -1,11 +1,14 @@
 import { apiClient } from "@/config/service.config";
 import { NotaRequest } from "@/types/request/NotaRequest";
+import { ClienteProveedorResponse } from "@/types/response/ClienteProveedorResponse";
 import { NotaResponse } from "@/types/response/NotaResponse";
 
 export class NotaService {
-    public static async create(nota: NotaRequest): Promise<NotaResponse> {
+    public static async create(nota: NotaRequest): Promise<any> {
         try {
-            const response = await apiClient.post<NotaResponse>("/notas", nota);
+            const response = await apiClient.post<any>("/notas", nota, {
+                responseType: "blob", headers: {"Content-Type": "application/pdf"}
+            });
             return response.data;
         } catch (error) {
             throw new Error("Error creando nota: " + error);
@@ -18,6 +21,15 @@ export class NotaService {
             return response.data;
         } catch (error) {
             throw new Error("Error obteniendo notas: " + error);
+        }
+    }
+    
+    public static async getAllClientes(): Promise<ClienteProveedorResponse[]> {
+        try {
+            const response = await apiClient.get<ClienteProveedorResponse[]>("/notas/clientes");
+            return response.data;
+        } catch (error) {
+            throw new Error("Error obteniendo clientes: " + error);
         }
     }
 }

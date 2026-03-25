@@ -44,7 +44,8 @@ export default function NotasHome() {
     }, []);
 
     const openNew = () => {
-        router.push("/notas/nueva-nota");
+        //TODO add sucursal usuario from session
+        router.push(`/notas/nueva-nota?sucursalId=${1}`);
     };
 
 

@@ -15,6 +15,8 @@ export default function MainLayout({
     { name: "Home", href: "/", icon: "pi pi-home" },
     { name: "Usuarios", href: "/usuarios", icon: "pi pi-user" },
     { name: "Roles", href: "/roles", icon: "pi pi-card" },
+    { name: "Inventario", href: "/inventario", icon: "pi pi-card" },
+    { name: "Notas", href: "/notas", icon: "pi pi-card" },
   ];
 
   const topbarItems: MenuItem[] = [
