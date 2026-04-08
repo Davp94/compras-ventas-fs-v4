@@ -8,22 +8,26 @@ import org.springframework.data.jpa.domain.Specification;
 import com.blumbit.compras_ventas.dto.request.ProductoFilterCriteria;
 import com.blumbit.compras_ventas.entity.Producto;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 
 public class ProductoSpecification {
 
     public static Specification<Producto> createSpecification(ProductoFilterCriteria criteria, String filterValue){
         return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
             List<Predicate> predicates = new ArrayList<>();
 
             if(filterValue != null && !filterValue.trim().isEmpty()){
                 String likeFilterValue = "%" + filterValue.toLowerCase() + "%";
+                Join<?, ?> categoriaJoin = root.join("categoria", JoinType.LEFT);
                 predicates.add(criteriaBuilder.or(
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("nombre")), likeFilterValue),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("descripcion")), likeFilterValue),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("codigoBarra")), likeFilterValue),
                     criteriaBuilder.like(criteriaBuilder.lower(root.get("marca")), likeFilterValue),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.join("categoria").get("nombre")), likeFilterValue)
+                    criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("nombre")), likeFilterValue)
                 ));
             }
 
@@ -48,12 +52,13 @@ public class ProductoSpecification {
             }
 
             if(criteria.getNombreCategoria() != null && !criteria.getNombreCategoria().trim().isEmpty()){
-                predicates.add(criteriaBuilder.like(root.join("categoria").get("nombre"), "%" + criteria.getNombreCategoria() + "%"));
+                Join<?, ?> categoriaJoin = root.join("categoria", JoinType.LEFT);
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(categoriaJoin.get("nombre")), "%" + criteria.getNombreCategoria().toLowerCase() + "%"));
             }
 
             if(criteria.getAlmacenId() != null && criteria.getAlmacenId() > 0){
-                predicates.add(criteriaBuilder.equal(root.join("almacenProductos")
-                .get("almacen").get("id"), criteria.getAlmacenId()));
+                Join<?, ?> almacenProductoJoin = root.join("almacenProductos", JoinType.LEFT);
+                predicates.add(criteriaBuilder.equal(almacenProductoJoin.get("almacen").get("id"), criteria.getAlmacenId()));
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));

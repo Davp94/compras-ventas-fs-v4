@@ -31,7 +31,7 @@ export default function InventarioHome() {
   const dt = useRef<DataTable<any[]>>(null);
   const [lazyState, setLazyState] = useState({
     pageSize: 10,
-    pageNumber: 1,
+    pageNumber: 0,
     sortField: "",
     sortOrder: 'ASC' as 'ASC' | 'DESC',
   });

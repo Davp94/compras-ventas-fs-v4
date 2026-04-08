@@ -78,7 +78,7 @@ public class ProductoService implements IProductoService {
 
     @Override
     public List<ProductoResponse> getProductosByAlmacen(Integer almacenId) {
-       return almacenProductoRepository.findByAlmacenId(almacenId).stream()
+       return almacenProductoRepository.findByAlmacen_Id(almacenId).stream()
         .map(almacenProducto -> ProductoResponse.fromEntity(almacenProducto.getProducto()))
         .toList();
     }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.blumbit.compras_ventas.dto.request.NotaRequest;
+import com.blumbit.compras_ventas.dto.response.ClienteProveedorResponse;
 import com.blumbit.compras_ventas.dto.response.NotaResponse;
 import com.blumbit.compras_ventas.service.spec.INotaService;
 
@@ -43,5 +44,11 @@ public class NotaController {
     public ResponseEntity<List<NotaResponse>> getAllNotas() {
         List<NotaResponse> notas = notaService.getAllNotas();
         return ResponseEntity.ok(notas);
+    }
+
+    @GetMapping("/cliente-proveedor")
+    public ResponseEntity<List<ClienteProveedorResponse>> getAllClienteProveedor() {
+        List<ClienteProveedorResponse> clienteProveedor = notaService.getAllClientesProveedor();
+        return ResponseEntity.ok(clienteProveedor);
     }
 }

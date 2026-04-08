@@ -9,7 +9,7 @@ import com.blumbit.compras_ventas.entity.AlmacenProducto;
 
 public interface AlmacenProductoRepository extends ListCrudRepository<AlmacenProducto, Integer>{
 
-    List<AlmacenProducto> findByAlmacenId(Integer almacenId);
+    List<AlmacenProducto> findByAlmacen_Id(Integer almacenId);
 
     Optional<AlmacenProducto> findByAlmacen_IdAndProducto_Id(Integer almacenId, Integer productoId);
 }

@@ -55,9 +55,9 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <div class="nota-title">Nota - <span th:text="${nota.id}">00000</span></div>
-            <div>Fecha: <span th:text="${nota.fecha}"></span>2026-01-01</div>
-            <div>Usuario: <span th:text="${nota.usuario.nombre}"></span></div>
+            <div class="nota-title">Nota - <span th:text="${nota.id != null ? nota.id : 'N/A'}">00000</span></div>
+            <div>Fecha: <span th:text="${nota.fecha != null ? nota.fecha : 'N/A'}"></span>2026-01-01</div>
+            <div>Usuario: <span th:text="${nota.usuario != null and nota.usuario.nombre != null ? nota.usuario.nombre : 'N/A'}"></span></div>
         </div>
         <div class="header-right">
             <img th:src="@{classpath:/static/logo-blumbit-color1.png}" alt="Company Logo" class="logo"></img>
@@ -66,8 +66,8 @@
 
     <div class="info-section">
         <h3>Cliente / Proveedor</h3>
-        <p>Nombre: <span th:text="${nota.clienteProveedor.razonSocial}">Cliente</span></p>
-        <p>Documento: <span th:text="${nota.clienteProveedor.nroIdentificacion}"></span></p>
+        <p>Nombre: <span th:text="${nota.clienteProveedor != null and nota.clienteProveedor.razonSocial != null ? nota.clienteProveedor.razonSocial : 'N/A'}">Cliente</span></p>
+        <p>Documento: <span th:text="${nota.clienteProveedor != null and nota.clienteProveedor.nroIdentificacion != null ? nota.clienteProveedor.nroIdentificacion : 'N/A'}"></span></p>
     </div>
  
     <table>
@@ -82,16 +82,16 @@
         </thead>
         <tbody>
             <tr th:each="movimiento : ${movimientos}">
-                <td th:text="${movimiento.producto.nombre}"></td>
-                <td th:text="${movimiento.cantidad}"></td>
-                <td th:text="${movimiento.precioUnitarioCompra}"></td>
-                <td th:text="${movimiento.precioUnitarioVenta}"></td>
-                <td th:text="${movimiento.cantidad * movimiento.precioUnitarioVenta}"></td>
+                <td th:text="${movimiento.producto != null and movimiento.producto.nombre != null ? movimiento.producto.nombre : 'N/A'}"></td>
+                <td th:text="${movimiento.cantidad != null ? movimiento.cantidad : 0}"></td>
+                <td th:text="${movimiento.precioUnitarioCompra != null ? movimiento.precioUnitarioCompra : 0}"></td>
+                <td th:text="${movimiento.precioUnitarioVenta != null ? movimiento.precioUnitarioVenta : 0}"></td>
+                <td th:text="${movimiento.cantidad != null and movimiento.precioUnitarioVenta != null ? movimiento.cantidad * movimiento.precioUnitarioVenta : 0}"></td>
             </tr>
         </tbody>
     </table>
     <div class="total-section">
-        Total: <span th:text="${nota.total}">0.00</span>
+        Total: <span th:text="${nota.total != null ? nota.total : '0.00'}">0.00</span>
     </div>
 </body>
 </html>

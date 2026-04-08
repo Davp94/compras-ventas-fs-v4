@@ -5,6 +5,7 @@ import java.util.List;
 import com.blumbit.compras_ventas.dto.request.NotaRequest;
 import com.blumbit.compras_ventas.dto.request.MovimientoRequest;
 import com.blumbit.compras_ventas.dto.response.NotaResponse;
+import com.blumbit.compras_ventas.dto.response.ClienteProveedorResponse;
 import com.blumbit.compras_ventas.dto.response.MovimientoResponse;
 
 public interface INotaService {
@@ -13,5 +14,7 @@ public interface INotaService {
     List<NotaResponse> getAllNotas();
 
     byte[] createNota(NotaRequest notaRequest);
+
+    List<ClienteProveedorResponse> getAllClientesProveedor();
 
 }

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.blumbit.compras_ventas.entity.Nota;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +22,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class NotaRequest {
 
     @NotBlank(message = "El tipo de nota es requerido")

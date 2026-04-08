@@ -10,14 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.blumbit.compras_ventas.dto.request.NotaRequest;
 import com.blumbit.compras_ventas.dto.request.MovimientoRequest;
+import com.blumbit.compras_ventas.dto.response.ClienteProveedorResponse;
 import com.blumbit.compras_ventas.dto.response.NotaResponse;
-import com.blumbit.compras_ventas.dto.response.MovimientoResponse;
 import com.blumbit.compras_ventas.entity.Nota;
 import com.blumbit.compras_ventas.entity.Movimiento;
 import com.blumbit.compras_ventas.entity.Usuario;
 import com.blumbit.compras_ventas.entity.ClienteProveedor;
-import com.blumbit.compras_ventas.entity.Producto;
-import com.blumbit.compras_ventas.entity.Almacen;
 import com.blumbit.compras_ventas.entity.AlmacenProducto;
 import com.blumbit.compras_ventas.enums.TipoMovimiento;
 import com.blumbit.compras_ventas.repository.NotaRepository;
@@ -127,5 +125,10 @@ public class NotaServiceImpl implements INotaService {
             log.error("erro validando stock", e);
             throw new RuntimeException("Error al validar el stock: " + e.getMessage());
         }
+    }
+
+    @Override
+    public List<ClienteProveedorResponse> getAllClientesProveedor() {
+        return clienteProveedorRepository.findAll().stream().map(ClienteProveedorResponse::fromEntity).toList();
     }
 }

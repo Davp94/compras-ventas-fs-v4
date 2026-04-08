@@ -95,7 +95,7 @@ POST {{host}}/login
 Content-Type: application/json
 
 {
-    "username": "erin.spinka@hotmail.com",
+    "username": "corina.collins@gmail.com",
     "password": "123456"
 }
 
@@ -104,8 +104,12 @@ POST {{host}}/login/refresh-token
 Authentication: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfdGVzdGRAZXhhbXBsZS5jb20iLCJzdWIiOiJ0ZXN0ZEBleGFtcGxlLmNvbSIsImlhdCI6MTc3MDI1MTcxNywiZXhwIjoxNzcwODU2NTE3fQ.QvMBcLhPJyLL6BWsnZKKv20sKCj9_AdGwOHybDix4SJ6xLFhTGmWIWQ86wnusGmNgOqoPTZgo7u8Xlyw3w0vdA
 
 ### Productos - Listar con Paginación
-GET {{host}}/productos/paginacion?pageNumber=30&pageSize=20&sortField=nombre&sortOrder=asc&nombre=&descripcion=&codigoBarra=&marca=&nombreCategoria=&almacenId=
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfZ2VuZS5oYW5lQGdtYWlsLmNvbSIsInN1YiI6ImdlbmUuaGFuZUBnbWFpbC5jb20iLCJpYXQiOjE3NzE1NDYxNTQsImV4cCI6MTc3MTU0NzA1NH0.JpKpWuRCexyXwejKZGbfuDZ_a1p8-FE73T3klCoVrDz46EaKCSnUL2Buynu-eDGK31o6oWYJN0bFh0PlAO4CNA
+GET {{host}}/productos/paginacion?pageSize=10&pageNumber=0&sortField=id&sortOrder=ASC&almacenId=2
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfZXVnZW5pYS5lcm5zZXJAaG90bWFpbC5jb20iLCJzdWIiOiJldWdlbmlhLmVybnNlckBob3RtYWlsLmNvbSIsImlhdCI6MTc3NDQ4Njg2MSwiZXhwIjoxNzc0NDg3NzYxfQ.QyDUItQUeyQC8um_gD8Mcrclvc7Tduv6wH5yt-ZDTskKk5DZDiNwIxFdEEk6CY68ZIh3DR7uCQzveof2D1cHvQ
+
+### Productos - almacen
+GET {{host}}/productos/almacen/4
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfdG9yaS5kaWNraW5zb25AeWFob28uY29tIiwic3ViIjoidG9yaS5kaWNraW5zb25AeWFob28uY29tIiwiaWF0IjoxNzc0ODM3ODk1LCJleHAiOjE3NzQ4Mzg3OTV9.sw0-REMA0ZPE0IjpChoziguuuxoKfNVO9SuRKWY5hhynQEofJHcRNu2YmDLycBlutJeG6EIYCkn2OXpBQ6RBbg
 
 ### Productos - Crear
 POST {{host}}/producto
@@ -122,23 +126,29 @@ Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfbWlxdWVsLndlaW1hbm5AZ21ha
 }
 
 ### Nota - Crear
-POST {{host}}/nota
+POST {{host}}/notas
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfbWlxdWVsLndlaW1hbm5AZ21haWwuY29tIiwic3ViIjoibWlxdWVsLndlaW1hbW5AZ21haWwuY29tIiwiaWF0IjoxNzcwNjgxMDM0LCJleHAiOjE3NzA2ODE5MzR9.07mrm1Kdl6Y9i2mWcQA60P-pH1tvrb7y_hi-iLMcVD9t0hVRJeyVvvisNfoVkmrGsPP9yZ_NKvPWx35xPuAxCg
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfY29yaW5hLmNvbGxpbnNAZ21haWwuY29tIiwic3ViIjoiY29yaW5hLmNvbGxpbnNAZ21haWwuY29tIiwiaWF0IjoxNzc1MDE0NTcwLCJleHAiOjE3NzUwMTU0NzB9.n3sYICOace31LYlw9-6Gbxfaaz5B_UVjnQ7uvyg4ZzXj8cwqymcnWKh9vwSLWcX74sQSF3HeZwnDT3y-2K_xkw
 
 {
-    "tipo": "COMPRA",
+    "tipoNota": "Compra",
     "numeroNota": "NOTA-001",
-    "fecha": "2026-02-19",
-    "descripcion": "Compra de productos electrónicos",
+    "observaciones": "Compra de productos electrónicos",
     "moneda": "BOB",
+    "usuarioId": 1,
     "clienteProveedorId": 1,
-    "detalles": [
+    "movimientos": [
         {
-            "productoId": 1,
+            "productoId": 7,
+            "almacenId": 28,
             "cantidad": 5,
-            "precioUnitario": 1200.50,
-            "porcentajeDescuento": 0
+            "precioUnitarioCompra": 1200.50,
+            "precioUnitarioVenta": 1500.00,
+            "observaciones": "dsadsadsadsad"
         }
     ]
 }
+
+### Clientes Proveedores - Listar
+GET {{host}}/notas/cliente-proveedor
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJ1aWQiOiJfdG9yaS5kaWNraW5zb25AeWFob28uY29tIiwic3ViIjoidG9yaS5kaWNraW5zb25AeWFob28uY29tIiwiaWF0IjoxNzc0ODM3ODk1LCJleHAiOjE3NzQ4Mzg3OTV9.sw0-REMA0ZPE0IjpChoziguuuxoKfNVO9SuRKWY5hhynQEofJHcRNu2YmDLycBlutJeG6EIYCkn2OXpBQ6RBbg
