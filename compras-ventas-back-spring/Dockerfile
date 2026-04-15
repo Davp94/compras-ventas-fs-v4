@@ -10,6 +10,4 @@ COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8090
 
-ENV STORAGE_LOCATION=/home/david/Documents/projects/blumbit/spring-backendV4/storage
-
 ENTRYPOINT ["sh", "-c", "java -jar app.jar"]
