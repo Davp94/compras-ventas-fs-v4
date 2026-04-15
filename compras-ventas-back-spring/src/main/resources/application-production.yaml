@@ -1,5 +1,6 @@
 server:
-  port: 8090 
+  port: 8090
+spring:   
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://dpg-d7ff5i9f9bms73a5jsf0-a:5432/compras_ventas_db_3uy2
